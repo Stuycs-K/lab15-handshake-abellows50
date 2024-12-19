@@ -5,4 +5,9 @@ int main() {
   int from_client;
 
   from_client = server_handshake( &to_client );
+
+  char line[1000];
+  while(read(from_client, line, 1000)){
+    printf("recived: %s\n", line);
+  }
 }

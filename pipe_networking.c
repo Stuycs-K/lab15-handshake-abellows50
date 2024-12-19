@@ -26,7 +26,7 @@ int server_setup() {
 }
 
 /*=========================
-  server_handshake 
+  server_handshake
   args: int * to_client
 
   Performs the server side pipe 3 way handshake.
@@ -56,17 +56,20 @@ int server_handshake(int *to_client) {
 
   //send back SYN-ACK
   int syn_ack = getpid();
+  printf("syn_ack is %d\n", syn_ack);
   write(to_client_real, &syn_ack, sizeof(int));
 
   //recieve and confirm that ACK matches pid-1;
   int ack;
+  printf("waiting for ack...\n");
   read(from_client, &ack, sizeof(int));
+  printf("ack is %d which is a %s\n", ack, ack==syn_ack-1?"PASS":"FAIL");
 
   if (ack != syn_ack - 1){
     perror("breaking connection attempt - handshake failed");
     exit(1); //err on response!
   }
-  
+  printf("HANDSHAKE complete...\n");
   //Handshake complete
   return from_client;
 }
@@ -83,6 +86,7 @@ int server_handshake(int *to_client) {
   =========================*/
 int client_handshake(int *to_server) {
   *to_server = open("WKP", O_WRONLY, 0);
+  printf("opened WKP...\n");
   if(*to_server == -1){
     perror("err: server has not yet created WKP...");
     exit(1);
@@ -91,16 +95,21 @@ int client_handshake(int *to_server) {
   char pp_name[MAX_PP_LEN];
   sprintf(pp_name, "%d", getpid());
   mkfifo(pp_name, 0666);
-
-  int from_server = open(pp_name, O_RDONLY, 0);
+  printf("created pp pipe: %s...\n", pp_name);
 
   write(*to_server, pp_name, MAX_PP_LEN);
-
+  printf("wrote the pp_name to WKP...\n");
+  int from_server = open(pp_name, O_RDONLY, 0);
+  printf("opened pp_name read end...\n");
+  remove(pp_name);
+  printf("removed PP\n");
   int syn_ack;
   read(from_server, &syn_ack, sizeof(int));
+  printf("recieved %d as SYN_ACK\n", syn_ack);
 
   int ack = syn_ack - 1;
   write(*to_server, &ack, sizeof(int));
+  printf("replied with ACK of %d\n", ack);
 
   return from_server;
 }
@@ -118,5 +127,3 @@ int server_connect(int from_client) {
   int to_client  = 0;
   return to_client;
 }
-
-
