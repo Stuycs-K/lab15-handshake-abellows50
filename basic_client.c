@@ -7,8 +7,9 @@ int main() {
 
   from_server = client_handshake( &to_server );
 
-  char line[1000];
-  while(fgets(line, 1000, stdin)){
-    write(to_server, line, 1000);
+  while(1){
+    int rando;
+    read(from_server, &rando, sizeof(int));
+    printf("recived: %d\n", rando);
   }
 }

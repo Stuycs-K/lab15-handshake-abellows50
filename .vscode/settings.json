@@ -1,0 +1,6 @@
+{
+    "files.associations": {
+        "unistd.h": "c",
+        "pipe_networking.h": "c"
+    }
+}

@@ -18,7 +18,6 @@ int server_setup() {
   printf("created WKP...\n");
   int from_client = open("WKP",O_RDONLY, 0);
   printf("WKP has opened...\n");
-
   remove("WKP");
   printf("WKP file removed...\n");
 
