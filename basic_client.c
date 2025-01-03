@@ -7,9 +7,10 @@ int main() {
 
   from_server = client_handshake( &to_server );
 
-  while(1){
-    int rando;
-    read(from_server, &rando, sizeof(int));
+  int rando;
+  while(read(from_server, &rando, sizeof(int))){
     printf("recived: %d\n", rando);
   }
+  printf("Server dropped connection...\n");
+  printf("terminating...\n");
 }

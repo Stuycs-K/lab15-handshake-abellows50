@@ -5,9 +5,20 @@
 
 
 void sighandler(int signo){
-  if(signo == SIGPIPE){ //child 
+  switch(signo){ //child 
+    case SIGPIPE:
+      {
+        break;
+      }
+    case SIGINT:
+      {
+        remove("WKP");
+        perror("Exiting due to ctrl-c...");
+        exit(0);
+      }
     // cleanup();
   }
+
 }
 
 void rando(int * r){
@@ -18,6 +29,7 @@ void rando(int * r){
 }
 
 int main() {
+  signal(SIGINT, sighandler);
   while(1){
     printf("establishing connection to client...\n");
     int to_client;
@@ -28,16 +40,12 @@ int main() {
     //actual thing it does
     int r;
     rando(&r);
-    while(1){
-      if(write(to_client, &r, sizeof(r)) > 0){
+    while(write(to_client, &r, sizeof(r))){
         printf("sent %d\n",r);
         rando(&r);
         sleep(1);
-      }
-      else{
-        break;
-      }
     }
+    close(to_client);
     printf("client broke connection...\n");
   }
 }
