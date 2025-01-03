@@ -55,7 +55,7 @@ void server_cycle(int to_client, int from_client){
 int main() {
   signal(SIGINT, sighandler);
   signal(SIGCHLD, sighandler);
-  while(1){
+  while(1){ 
     //main server loop
     printf("establishing connection to client...\n");
     int from_client = server_setup(); //wait for connection...
