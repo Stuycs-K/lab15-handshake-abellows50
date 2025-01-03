@@ -118,11 +118,48 @@ int client_handshake(int *to_server) {
   server_connect
   args: int from_client
 
+  before using this fxn, the server should run:
+        int from_client = server_setup();
+  then 
+        int to_client = server_connect(from_client);
+
   handles the subserver portion of the 3 way handshake
 
   returns the file descriptor for the downstream pipe.
   =========================*/
 int server_connect(int from_client) {
-  int to_client  = 0;
+   /*============================
+  HANDSHAKE: Recieve SYN (PP name)
+             Send back SYN-ACK (pid)
+             recieve and check ACK (pid - 1)?
+             ==================================*/
+
+
+  //read the name of the PP -- this is the SYN
+  char pp_name[MAX_PP_LEN];
+  read(from_client, pp_name, MAX_PP_LEN);
+  printf("read pp_id name...\n");
+
+  //open the pp_name and set to_client
+  int to_client = open(pp_name, O_WRONLY, 0);
+  printf("oppened the pp_name channel...\n");
+
+  //send back SYN-ACK
+  int syn_ack = getpid();
+  printf("syn_ack is %d\n", syn_ack);
+  write(to_client, &syn_ack, sizeof(int));
+
+  //recieve and confirm that ACK matches pid-1;
+  int ack;
+  printf("waiting for ack...\n");
+  read(from_client, &ack, sizeof(int));
+  printf("ack is %d which is a %s\n", ack, ack==syn_ack-1?"PASS":"FAIL");
+
+  if (ack != syn_ack - 1){
+    perror("breaking connection attempt - handshake failed");
+    exit(1); //err on response!
+  }
+  printf("HANDSHAKE complete...\n");
+  //Handshake complete
   return to_client;
 }

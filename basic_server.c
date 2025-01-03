@@ -30,22 +30,20 @@ void rando(int * r){
 
 int main() {
   signal(SIGINT, sighandler);
-  while(1){
-    printf("establishing connection to client...\n");
-    int to_client;
-    int from_client;
+  printf("establishing connection to client...\n");
+  int to_client;
+  int from_client;
 
-    from_client = server_handshake( &to_client );
+  from_client = server_handshake( &to_client );
 
-    //actual thing it does
-    int r;
-    rando(&r);
-    while(write(to_client, &r, sizeof(r))){
-        printf("sent %d\n",r);
-        rando(&r);
-        sleep(1);
-    }
-    close(to_client);
-    printf("client broke connection...\n");
+  //actual thing it does
+  int r;
+  rando(&r);
+  while(write(to_client, &r, sizeof(r))){
+      printf("sent %d\n",r);
+      rando(&r);
+      sleep(1);
   }
+  close(to_client);
+  printf("client broke connection...\n");
 }
