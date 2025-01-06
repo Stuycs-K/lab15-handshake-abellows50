@@ -1,4 +1,4 @@
-all: client server
+compile: client server
 
 client: basic_client.o pipe_networking.o
 	gcc -o client -g basic_client.o pipe_networking.o
